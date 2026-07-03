@@ -37,7 +37,5 @@ jobs:
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v7
         with:
-          path: build/libs/*-[0-9]*.jar # 使用通配符匹配标准版本号命名的主 JAR 包
-          # 如果上述通配符未能匹配成功，你也可以直接硬编码指定具体文件名，例如：
-          # path: build/libs/EcoEnchants.jar
-          archive: false # 直接上传生成的 JAR 文件，无需打包成 ZIP 压缩包
+          path: build/libs/*-all.jar # 👈 精准锁定包含所有依赖的成品包
+          archive: false
