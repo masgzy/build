@@ -1,0 +1,41 @@
+name: Build EcoEnchants Latest
+
+on:
+  workflow_dispatch: # 允许手动触发构建
+  schedule:
+    - cron: '0 0 * * 1' # 每周一凌晨 0:00 自动触发构建
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 克隆 EcoEnchants 官方仓库的最新主分支代码
+      - name: Checkout EcoEnchants Repository
+        uses: actions/checkout@v6
+        with:
+          repository: 'Auxilor/EcoEnchants'
+          fetch-depth: 1
+
+      # 2. 配置 JDK 25 编译环境
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: 'gradle' # 使用 Gradle 缓存以加速后续构建
+
+      # 3. 赋予 Gradle 执行脚本运行权限
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 4. 使用 Gradle 编译并打包（跳过测试与验证任务以加速构建）
+      - name: Build with Gradle
+        run: ./gradlew assemble -x test --no-daemon --parallel
+
+      # 5. 上传编译生成的 JAR 文件
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          path: build/libs/
+          archive: false # 直接上传生成的 JAR 文件，无需打包成 ZIP 压缩包
