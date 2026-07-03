@@ -1,0 +1,37 @@
+name: Build mcMMO Latest
+
+on:
+  workflow_dispatch: # 允许手动触发
+  schedule:
+    - cron: '0 0 * * 1' # 每周一凌晨自动构建
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 克隆 mcMMO 官方仓库的最新主分支代码
+      - name: Checkout mcMMO Repository
+        uses: actions/checkout@v6
+        with:
+          repository: 'mcMMO-Dev/mcMMO'
+          fetch-depth: 1
+
+      # 2. 配置 Java 环境（适配 26.1.2 服务端要求）
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # 3. 使用 Maven 进行编译与打包
+      - name: Build with Maven
+        run: mvn clean package -B
+
+      # 4. 将构建生成的 JAR 文件上传为 GitHub Artifacts
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcMMO-Latest-JAR
+          path: target/mcMMO.jar
