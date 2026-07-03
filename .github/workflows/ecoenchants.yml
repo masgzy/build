@@ -29,9 +29,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 4. 使用 Gradle 编译并打包（跳过测试与验证任务以加速构建）
+      # 4. 使用 Gradle 编译并打包（显式显示构建过程，跳过测试）
       - name: Build with Gradle
-        run: ./gradlew assemble -x test --no-daemon --parallel
+        run: ./gradlew assemble -x test --parallel --console=plain
+
 
       # 5. 上传编译生成的 JAR 文件
       - name: Upload Build Artifact
